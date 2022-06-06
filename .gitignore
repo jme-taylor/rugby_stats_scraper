@@ -2,6 +2,9 @@
 .vscode/
 .todo
 
+# data folder so you're not uploading huge csvs
+data/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
