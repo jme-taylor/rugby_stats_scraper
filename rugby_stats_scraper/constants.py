@@ -5,7 +5,7 @@ BASE_URL = 'https://www.espn.co.uk'
 
 SCORES_URL = BASE_URL + '/rugby/scoreboard?date='
 
-EARLIEST_DATE = datetime(2005, 2, 5).date()
+EARLIEST_DATE = datetime(2005, 2, 5)
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
