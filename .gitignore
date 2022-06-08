@@ -2,6 +2,10 @@
 .vscode/
 .todo
 
+# data, except the example file
+data/*
+!data/example.csv
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
