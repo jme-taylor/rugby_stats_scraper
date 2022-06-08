@@ -172,6 +172,7 @@ def create_match_data(start_date, end_date, filepath):
     match_data: pd.DataFrame
         A dataframe containing all available match data between the two dates
     """
+
     delta = timedelta(days=1)
     match_data = pd.DataFrame()
 
