@@ -23,6 +23,24 @@ default_temp_filepath = DATA_FOLDER.joinpath(default_temp_filename)
 @click.option("--latest-date", type=click.DateTime(formats=["%Y-%m-%d"]))
 @click.option("--filename")
 def main(earliest_date=None, latest_date=None, filename=None):
+    """
+    Pulls CSV match data for all matches between the specified dates. If the
+    dates are left as null, the defaults will be used. For the earliest date,
+    this will be the earliest date available on the site - 2nd February 2005.
+    For the latest date, this default will be yesterday's date. There is also
+    a filename parameter, which is also optional. '.csv' will be appended to
+    this for you. If left default, it will be saved as 'match_data.csv' in
+    your data folder.
+
+    Parameters
+    ----------
+    earliest_date: str, optional
+        A string of the earliest date you'd like in format 'YYYY-MM-DD'
+    latest_date: str, optional
+        A string of the latest date you'd like in format 'YYYY-MM-DD'
+    filename: str
+        A string of the filename you'd like
+    """
 
     if filename:
         filename = filename + ".csv"
