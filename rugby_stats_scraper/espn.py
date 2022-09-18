@@ -1,194 +1,83 @@
 import logging
-from datetime import datetime, timedelta
 
-import pandas as pd
-
-from rugby_stats_scraper.constants import BASE_URL, SCORES_URL
+from rugby_stats_scraper.constants import ESPN_ATTRIBUTES
 from rugby_stats_scraper.utils import get_url_content
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
-def get_all_matches(soup):
-    """
-    Function that returns all match links from days page
+class EspnMatch:
+    def __init__(self, url):
+        self.url = url
+        self.soup = get_url_content(self.url)
+        self.match_data_dict = dict()
+        logger.debug(f'Initialising class for {self.url}')
 
-    Parameters
-    ----------
-    soup: bs4.BeautifulSoup
-        A beautiful soup of a day's rugby matches
-
-    Returns
-    -------
-    game_links: list
-        A list of all of the URLs of parsable match links from that date
-    """
-    events = soup.find(id='events')
-    matches = events.find_all(attrs={'class': 'mobileScoreboardLink'})
-
-    match_links = []
-
-    for match in matches:
-        try:
-            raw_match_link = match['href']
-            match_links.append(BASE_URL + raw_match_link)
-        except KeyError:
-            continue
-
-    return match_links
-
-
-def get_attribute_text(soup, attribute):
-    """
-    Function to get attribute text for a given attribute, whilst doing error
-    handling
-
-    Parameters
-    ----------
-    soup: bs4.BeautifulSoup
-        A beautiful soup object
-    attribute: str
-        An attribute that you're trying to get the text for
-
-    Returns
-    -------
-    text: str
-        The text returned for the specific attribute
-    """
-    attribute_dict = {
-        'competition': 'game-details header',
-        'long_name': 'long-name',
-        'short_name': 'short-name',
-        'abbreviation': 'abbrev',
-        'score_home': 'score icon-font-after',
-        'score_away': 'score icon-font-before',
-    }
-    lookup = attribute_dict[attribute]
-    try:
-        text = soup.find(attrs={'class': lookup}).text
-    except AttributeError:
-        text = None
-
-    return text
-
-
-def get_match_information(soup):
-    """
-    Function to get match information from a match soup object and return them
-
-    Parameters
-    ----------
-    soup: bs4.BeautifulSoup
-        A beautiful soup object of the match URL
-
-    Returns
-    -------
-    match_information: dict
-        A dictionary containing the following information, the competition the
-        match was played in, the home teams name and score and the away team's
-        name and score
-    """
-    competition = get_attribute_text(soup, 'competition')
-    home_team = soup.find(attrs={'class': 'team team-a'})
-
-    home_team_long_name = get_attribute_text(home_team, 'long_name')
-    home_team_short_name = get_attribute_text(home_team, 'short_name')
-    home_team_abbrev = get_attribute_text(home_team, 'abbreviation')
-    home_team_score = get_attribute_text(home_team, 'score_home')
-
-    away_team = soup.find(attrs={'class': 'team team-b'})
-
-    away_team_long_name = get_attribute_text(away_team, 'long_name')
-    away_team_short_name = get_attribute_text(away_team, 'short_name')
-    away_team_abbrev = get_attribute_text(away_team, 'abbreviation')
-    away_team_score = get_attribute_text(away_team, 'score_away')
-
-    match_information = {
-        'competition': competition,
-        'home_team_long_name': home_team_long_name,
-        'home_team_short_name': home_team_short_name,
-        'home_team_abbrev': home_team_abbrev,
-        'home_team_score': home_team_score,
-        'away_team_long_name': away_team_long_name,
-        'away_team_short_name': away_team_short_name,
-        'away_team_abbrev': away_team_abbrev,
-        'away_team_score': away_team_score,
-    }
-    return match_information
-
-
-def get_date_match_information(url):
-    """
-    Function that takes a date's URL and returns a pandas dataframe containing
-    all the days match's information
-
-    Parameters
-    ----------
-    url: str
-        A string of the url of the date
-
-    Returns
-    -------
-    date_match_information: pd.DataFrame
-        A dataframe containing information on all matches that occured that
-        date
-    """
-    url_soup = get_url_content(url)
-    matches = get_all_matches(url_soup)
-
-    date_string = url[-8:]
-    date = datetime.strptime(date_string, '%Y%m%d')
-
-    matches_information = []
-    for match in matches:
-        match_soup = get_url_content(match)
-        match_information = get_match_information(match_soup)
-        matches_information.append(match_information)
-
-    date_match_information = pd.DataFrame(matches_information)
-    if not date_match_information.empty:
-        date_match_information = date_match_information.assign(
-            match_date=date, date_url=url
-        )
-    return date_match_information
-
-
-def create_match_data(start_date, end_date, filepath):
-    """
-    Get all available match data between two given dates
-
-    Parameters
-    ----------
-    start_date: datetime.datetime
-        The earliest date to start looking for matches in between
-    end_date: datetime.datetime
-        The latest date to look matches up to
-    filepath: str
-        The filepath of where the data is going to be saved
-
-    Returns
-    -------
-    match_data: pd.DataFrame
-        A dataframe containing all available match data between the two dates
-    """
-
-    delta = timedelta(days=1)
-    match_data = pd.DataFrame()
-
-    current_date = start_date
-
-    while current_date <= end_date:
-        logger.info(f'Trying to get matches for {current_date}')
-        current_date_string = datetime.strftime(current_date, '%Y%m%d')
-        current_url = SCORES_URL + current_date_string
-        current_dataframe = get_date_match_information(current_url)
-        if not current_dataframe.empty:
-            match_data = pd.concat([match_data, current_dataframe])
-            logger.info('Match data parsed')
+    def attribute_text(self, attribute, soup=None):
+        lookup = ESPN_ATTRIBUTES[attribute]
+        if soup:
+            source = soup
         else:
-            logger.info('No match data available')
-        match_data.to_csv(filepath, index=False)
-        current_date += delta
+            source = self.soup
 
-    return match_data
+        try:
+            text = source.find(attrs={'class': lookup}).text
+        except AttributeError:
+            text = None
+
+        return text
+
+    def competition_information(self):
+        raw_competition = self.attribute_text('competition')
+        self.competition = raw_competition[:-4].strip()
+        self.year = raw_competition[-4:]
+        self.match_data_dict['competition'] = self.competition
+        self.match_data_dict['year'] = self.year
+
+    def score_information(self):
+        self.home_score = self.attribute_text('score_home')
+        self.away_score = self.attribute_text('score_away')
+        self.match_data_dict['home_score'] = self.home_score
+        self.match_data_dict['away_score'] = self.away_score
+
+    def venue_information(self):
+        self.venue = self.attribute_text('venue')
+        self.venue = self.venue.split(':')[1].lstrip()
+        self.match_data_dict['venue'] = self.venue
+
+    def get_team_information(self, home_away):
+        if home_away == 'home':
+            lookup = {'class': 'team team-a'}
+        elif home_away == 'away':
+            lookup = {'class': 'team team-b'}
+        else:
+            raise ValueError('"home_away" must be one of "home" or "away"')
+
+        team_soup = self.soup.find(attrs=lookup)
+        team_dict = {
+            'long_name_'
+            + home_away: self.attribute_text('long_name', soup=team_soup),
+            'short_name_'
+            + home_away: self.attribute_text('short_name', soup=team_soup),
+            'abbreviation_'
+            + home_away: self.attribute_text('abbreviation', soup=team_soup),
+        }
+        team_dict = {home_away + '_' + k: v for k, v in team_dict.items()}
+
+        return team_dict
+
+    def match_data(self):
+
+        # if not already done - get headline info for match
+        self.competition_information()
+        self.score_information()
+        self.venue_information()
+
+        home_team_dict = self.get_team_information('home')
+        self.match_data_dict.update(home_team_dict)
+
+        away_team_dict = self.get_team_information('away')
+        self.match_data_dict.update(away_team_dict)
+
+        return self.match_data_dict
