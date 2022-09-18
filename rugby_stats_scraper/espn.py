@@ -1,8 +1,14 @@
 import logging
+from datetime import datetime
 
+import pandas as pd
 from bs4 import BeautifulSoup
 
-from rugby_stats_scraper.constants import ESPN_ATTRIBUTES
+from rugby_stats_scraper.constants import (
+    ESPN_ATTRIBUTES,
+    ESPN_BASE_URL,
+    ESPN_MATCH_DATA_BASE,
+)
 from rugby_stats_scraper.utils import get_url_content
 
 logger = logging.getLogger(__name__)
@@ -30,7 +36,8 @@ class EspnMatch:
     def __init__(self, url: str) -> None:
         self.url = url
         self.soup = get_url_content(self.url)
-        self.match_data_dict = dict()
+        self.match_data_dict = ESPN_MATCH_DATA_BASE.copy()
+        self.match_data_dict['url'] = self.url
 
     def attribute_text(
         self, attribute: str, soup: BeautifulSoup = None
@@ -83,19 +90,13 @@ class EspnMatch:
         raw_venue = self.attribute_text('venue')
         self.match_data_dict['venue'] = raw_venue.split(':')[1].lstrip()
 
-    def get_team_information(self, home_away: str) -> dict:
+    def get_team_information(self, home_away: str) -> None:
         """Method to get team information from a match, for both teams.
 
         Parameters
         ----------
         home_away: str
             A string to describe if the home or away team's data is required.
-
-        Returns
-        -------
-        team_dict: dict
-            A dictionary containing the team's long name, short name and their
-            abrreviation.
         """
         if home_away == 'home':
             lookup = {'class': 'team team-a'}
@@ -105,17 +106,15 @@ class EspnMatch:
             raise ValueError('"home_away" must be one of "home" or "away"')
 
         team_soup = self.soup.find(attrs=lookup)
-        team_dict = {
-            'long_name_'
-            + home_away: self.attribute_text('long_name', soup=team_soup),
-            'short_name_'
-            + home_away: self.attribute_text('short_name', soup=team_soup),
-            'abbreviation_'
-            + home_away: self.attribute_text('abbreviation', soup=team_soup),
-        }
-        team_dict = {home_away + '_' + k: v for k, v in team_dict.items()}
-
-        return team_dict
+        self.match_data_dict[home_away + '_long_name'] = self.attribute_text(
+            'long_name', soup=team_soup
+        )
+        self.match_data_dict[home_away + '_short_name'] = self.attribute_text(
+            'short_name', soup=team_soup
+        )
+        self.match_data_dict[
+            home_away + '_abbreviation'
+        ] = self.attribute_text('abbreviation', soup=team_soup)
 
     def match_data(self) -> dict:
         """Method to assemble all match data and return the dictionary containing this.
@@ -131,11 +130,43 @@ class EspnMatch:
         self.competition_information()
         self.score_information()
         self.venue_information()
-
-        home_team_dict = self.get_team_information('home')
-        self.match_data_dict.update(home_team_dict)
-
-        away_team_dict = self.get_team_information('away')
-        self.match_data_dict.update(away_team_dict)
+        self.get_team_information('home')
+        self.get_team_information('away')
 
         return self.match_data_dict
+
+
+class EspnDate:
+    def __init__(self, url: str) -> None:
+        self.url = url
+        self.soup = get_url_content(self.url)
+        self.date = datetime.strptime(self.url[-8:], '%Y%m%d')
+        self.match_links = list()
+        logger.info(f'Getting data for {self.url}')
+
+    def get_matches(self) -> None:
+        """Method to get all matches for a date."""
+        events = self.soup.find(id='events')
+        matches = events.find_all(attrs={'class': 'mobileScoreboardLink'})
+
+        for match in matches:
+            try:
+                raw_match_link = match['href']
+                self.match_links.append(ESPN_BASE_URL + raw_match_link)
+            except KeyError:
+                continue
+
+        match_count = len(self.match_links)
+        logger.info(f'{match_count} matches found')
+
+    def create_date_dataframe(self):
+        self.get_matches()
+        match_data_dicts = []
+        for match_link in self.match_links:
+            temp_match = EspnMatch(match_link)
+            temp_match_data = temp_match.match_data()
+            match_data_dicts.append(temp_match_data)
+
+        date_dataframe = pd.DataFrame(match_data_dicts)
+        date_dataframe['match_date'] = self.date
+        return date_dataframe

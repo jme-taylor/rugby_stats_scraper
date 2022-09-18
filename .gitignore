@@ -2,9 +2,10 @@
 .vscode/
 .todo
 
-# data, except the example file
+# data, except the example file + testing files
 data/*
 !data/example.csv
+!data/espn_date_test.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
