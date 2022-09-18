@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 
 
-def get_url_content(url):
+def get_url_content(url: str) -> BeautifulSoup:
     """
     Function to create a beautiful soup object from a URL.
 

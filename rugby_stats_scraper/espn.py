@@ -1,5 +1,7 @@
 import logging
 
+from bs4 import BeautifulSoup
+
 from rugby_stats_scraper.constants import ESPN_ATTRIBUTES
 from rugby_stats_scraper.utils import get_url_content
 
@@ -8,13 +10,27 @@ logging.basicConfig(level=logging.INFO)
 
 
 class EspnMatch:
-    def __init__(self, url):
+    """Class and methods for a single match on ESPN website.
+
+    Parameters
+    ----------
+    url: str
+        The URL of the website for the match
+    Attributes
+    ----------
+    url: str
+        The URL of the website for the match
+
+    """
+
+    def __init__(self, url: str) -> None:
         self.url = url
         self.soup = get_url_content(self.url)
         self.match_data_dict = dict()
-        logger.debug(f'Initialising class for {self.url}')
 
-    def attribute_text(self, attribute, soup=None):
+    def attribute_text(
+        self, attribute: str, soup: BeautifulSoup = None
+    ) -> str:
         lookup = ESPN_ATTRIBUTES[attribute]
         if soup:
             source = soup
@@ -28,25 +44,20 @@ class EspnMatch:
 
         return text
 
-    def competition_information(self):
+    def competition_information(self) -> None:
         raw_competition = self.attribute_text('competition')
-        self.competition = raw_competition[:-4].strip()
-        self.year = raw_competition[-4:]
-        self.match_data_dict['competition'] = self.competition
-        self.match_data_dict['year'] = self.year
+        self.match_data_dict['competition'] = raw_competition[:-4].strip()
+        self.match_data_dict['year'] = raw_competition[-4:]
 
-    def score_information(self):
-        self.home_score = self.attribute_text('score_home')
-        self.away_score = self.attribute_text('score_away')
-        self.match_data_dict['home_score'] = self.home_score
-        self.match_data_dict['away_score'] = self.away_score
+    def score_information(self) -> None:
+        self.match_data_dict['home_score'] = self.attribute_text('score_home')
+        self.match_data_dict['away_score'] = self.attribute_text('score_away')
 
     def venue_information(self):
-        self.venue = self.attribute_text('venue')
-        self.venue = self.venue.split(':')[1].lstrip()
-        self.match_data_dict['venue'] = self.venue
+        raw_venue = self.attribute_text('venue')
+        self.match_data_dict['venue'] = raw_venue.split(':')[1].lstrip()
 
-    def get_team_information(self, home_away):
+    def get_team_information(self, home_away: str) -> dict:
         if home_away == 'home':
             lookup = {'class': 'team team-a'}
         elif home_away == 'away':
@@ -67,7 +78,7 @@ class EspnMatch:
 
         return team_dict
 
-    def match_data(self):
+    def match_data(self) -> dict:
 
         # if not already done - get headline info for match
         self.competition_information()
