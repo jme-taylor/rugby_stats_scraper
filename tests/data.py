@@ -1,4 +1,5 @@
 EXPECTED_MATCH = {
+    'match_date': None,
     'url': 'https://www.espn.co.uk/rugby/match?gameId=594214&league=270559',
     'competition': 'Top 14 Orange',
     'year': '2022',

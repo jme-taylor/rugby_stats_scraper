@@ -26,11 +26,14 @@ class TestEspnDate(unittest.TestCase):
         )
 
         expected_data_path = DATA_FOLDER.joinpath('espn_date_test.csv')
-        expected_date_data = pd.read_csv(expected_data_path)
+        expected_date_data = pd.read_csv(
+            expected_data_path, dtype={'year': str}, parse_dates=['match_date']
+        )
         assert_frame_equal(
             expected_date_data,
-            test_date.create_date_dataframe(),
+            test_date.date_data(),
             check_dtype=False,
+            check_names=False,
         )
 
 
