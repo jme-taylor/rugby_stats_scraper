@@ -1,10 +1,10 @@
-match_date,url,competition,year,home_score,away_score,venue,home_long_name,home_short_name,home_abbreviation,away_long_name,away_short_name,away_abbreviation
-2022-09-17,https://www.espn.co.uk/rugby/match?gameId=595491&league=244293,Rugby Championship,2022,20,36,Estadio Libertadores de America,Argentina,Argentina,ARG,South Africa,South Africa,SA
-2022-09-17,https://www.espn.co.uk/rugby/match?gameId=401483153&league=267979,Gallagher Premiership,2023,38,22,cinch Stadium at Franklin's Gardens,Northampton Saints,Northampton Saints,NTHMP,London Irish,London Irish,IRISH
-2022-09-17,https://www.espn.co.uk/rugby/match?gameId=401483154&league=267979,Gallagher Premiership,2023,20,37,Recreation Ground,Bath Rugby,Bath Rugby,BATH,Sale Sharks,Sale Sharks,SALE
-2022-09-17,https://www.espn.co.uk/rugby/match?gameId=401483155&league=267979,Gallagher Premiership,2023,27,30,Twickenham Stoop,Harlequins,Harlequins,HQUIN,Saracens,Saracens,SARAC
-2022-09-17,https://www.espn.co.uk/rugby/match?gameId=401483156&league=267979,Gallagher Premiership,2023,36,21,Mattioli Woods Welford Road Stadium,Leicester Tigers,Leicester Tigers,LEICS,Newcastle Falcons,Newcastle Falcons,NEWC
-2022-09-17,https://www.espn.co.uk/rugby/match?gameId=401483157&league=267979,Gallagher Premiership,2023,8,23,Coventry Building Society Arena,Wasps,Wasps,WASPS,Bristol Rugby,Bristol Rugby,BTL
-2022-09-17,https://www.espn.co.uk/rugby/match?gameId=595587&league=270563,Bunnings Warehouse NPC,2023,39,44,Navigation Homes Stadium,Counties Manukau,Counties Manukau,MANK,Canterbury,Canterbury,CANT
-2022-09-17,https://www.espn.co.uk/rugby/match?gameId=595588&league=270563,Bunnings Warehouse NPC,2023,30,27,Eden Park,Auckland,Auckland,AUK,Tasman,Tasman,TASM
-2022-09-17,https://www.espn.co.uk/rugby/match?gameId=595589&league=270563,Bunnings Warehouse NPC,2023,12,19,McLean Park,Hawke's Bay,Hawke's Bay,HBAY,Wellington,Wellington,WELL
+match_date,venue,city,state,neutral_site,indoor,team_1_id,team_1_name,team_1_abbreviation,team_1_home_away,team_1_score,team_1_winner,team_2_id,team_2_name,team_2_abbreviation,team_2_home_away,team_2_score,team_2_winner,competition,season
+2022-09-17T19:10Z,Estadio Libertadores de America,Buenos Aires,Argentina,False,False,10,Argentina,ARG,home,20,False,5,South Africa,SA,away,36,True,Rugby Championship,2022
+2022-09-17T13:00Z,cinch Stadium at Franklin's Gardens,Northampton,England,False,False,25907,Northampton Saints,NTHMP,home,38,True,25904,London Irish,IRISH,away,22,False,Gallagher Premiership,2023
+2022-09-17T14:00Z,Recreation Ground,Bath,England,False,False,25898,Bath Rugby,BATH,home,20,False,25908,Sale Sharks,SALE,away,37,True,Gallagher Premiership,2023
+2022-09-17T14:00Z,Twickenham Stoop,London,England,False,False,25901,Harlequins,HQUIN,home,27,False,25909,Saracens,SARAC,away,30,True,Gallagher Premiership,2023
+2022-09-17T14:00Z,Mattioli Woods Welford Road Stadium,Leicester,England,False,False,25903,Leicester Tigers,LEICS,home,36,True,25906,Newcastle Falcons,NEWC,away,21,False,Gallagher Premiership,2023
+2022-09-17T14:00Z,Coventry Building Society Arena,Coventry,England,False,False,25905,Wasps,WASPS,home,8,False,25899,Bristol Rugby,BTL,away,23,True,Gallagher Premiership,2023
+2022-09-17T02:05Z,Navigation Homes Stadium,Pukekohe,New Zealand,False,False,25935,Counties Manukau,MANK,home,39,False,25933,Canterbury,CANT,away,44,True,Bunnings Warehouse NPC,2023
+2022-09-17T04:35Z,Eden Park,Auckland,New Zealand,False,False,25930,Auckland,AUK,home,30,True,25946,Tasman,TASM,away,27,False,Bunnings Warehouse NPC,2023
+2022-09-17T07:05Z,McLean Park,Napier,New Zealand,False,False,25937,Hawke's Bay,HBAY,home,12,False,25948,Wellington,WELL,away,19,True,Bunnings Warehouse NPC,2023
