@@ -14,10 +14,33 @@ ESPN_HEADERS = load_espn_headers()
 
 
 class EspnMatch:
+    """
+    Class for a single match from ESPN data.
+
+    Attributes
+    ----------
+    json: dict
+        A JSON of the match data
+    venue: str
+        The stadium that the match was played in.
+    city: str
+        The city that the match was played in.
+    state: str
+        The state that the match was played in.
+    neutral_site: bool
+        Whether the venue was neutral (i.e. neither of the two teams would
+        call it their home stadium).
+    indoor: bool
+        Whether the match was played indoors or not.
+    match_date: str
+        The date and time the match was played at.
+    """
+
     def __init__(self, json: dict) -> None:
         self.json = json
 
     def date_and_venue_information(self) -> None:
+        """Method to get the date and venue information for the match."""
         self.venue = self.json['competitions'][0]['venue']['fullName']
         self.city = self.json['competitions'][0]['venue']['address']['city']
         self.state = self.json['competitions'][0]['venue']['address']['state']
@@ -28,6 +51,22 @@ class EspnMatch:
     def team_information(
         self, team_json: dict, num: str, include_team_statistics: bool = False
     ) -> dict:
+        """Method to get information at a team level.
+
+        Parameters
+        ----------
+        team_json : dict
+            A JSON containing the team level information.
+        num : str
+            The number of the team - will be '1' or '2'
+        include_team_statistics : bool, optional
+            Whether to include detailed team statistics.
+
+        Returns
+        -------
+        team_dict: dict
+            A dictionary with team level information.
+        """
         team_dict = dict()
         team_dict[num + '_id'] = team_json['id']
         team_dict[num + '_name'] = team_json['team']['name']
@@ -40,6 +79,13 @@ class EspnMatch:
         return team_dict
 
     def match_data(self) -> dict:
+        """Generates the full match dataset.
+
+        Returns
+        -------
+        match_dict: dict
+            A dictionary containing all the match information.
+        """
         match_dict = dict()
         self.date_and_venue_information()
 
@@ -59,6 +105,21 @@ class EspnMatch:
 
 
 class EspnDate:
+    """
+    Class for a single date from ESPN data.
+
+    Attributes
+    ----------
+    date: str
+        A string of the date to get data from in 'YYYY-MM-DD' format.
+    url: str
+        The URL for the API to hit
+    response: requests.Respons
+        The API response
+    json: dict
+        A JSON of the API response.
+    """
+
     def __init__(self, date: str) -> None:
         self.date = date
         try:
@@ -73,6 +134,19 @@ class EspnDate:
         logger.info(f'Getting matches for: {formatted_date}')
 
     def date_data(self, include_team_statistics: bool = False):
+        """Method to create a date dataframe.
+
+        Parameters
+        ----------
+        include_team_statistics : bool, optional
+            Whether to include detailed team statistics or not, by default
+            False
+
+        Returns
+        -------
+        date_dataframe: pd.DataFrame
+            The dataframe containing all matches on that date.
+        """
         competitions = self.json['scores']
         competition_count = len(competitions)
         match_count = 0
