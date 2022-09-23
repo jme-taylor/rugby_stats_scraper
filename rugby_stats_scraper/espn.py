@@ -1,10 +1,15 @@
 import datetime
 import json
 import logging
+import time
 
 import pandas as pd
 
-from rugby_stats_scraper.utils import get_request_response, load_espn_headers
+from rugby_stats_scraper.utils import (
+    get_json_element,
+    get_request_response,
+    load_espn_headers,
+)
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -41,11 +46,21 @@ class EspnMatch:
 
     def date_and_venue_information(self) -> None:
         """Method to get the date and venue information for the match."""
-        self.venue = self.json['competitions'][0]['venue']['fullName']
-        self.city = self.json['competitions'][0]['venue']['address']['city']
-        self.state = self.json['competitions'][0]['venue']['address']['state']
+        self.venue = get_json_element(
+            self.json, ['competitions', 0, 'venue', 'address', 'fullName']
+        )
+        self.city = get_json_element(
+            self.json, ['competitions', 0, 'venue', 'address', 'city']
+        )
+        self.state = get_json_element(
+            self.json, ['competitions', 0, 'venue', 'address', 'state']
+        )
+
         self.neutral_site = self.json['competitions'][0]['neutralSite']
-        self.indoor = self.json['competitions'][0]['venue']['indoor']
+        self.indoor = get_json_element(
+            self.json, ['competitions', 0, 'venue', 'indoor']
+        )
+
         self.match_date = self.json['date']
 
     def team_information(
@@ -68,14 +83,22 @@ class EspnMatch:
             A dictionary with team level information.
         """
         team_dict = dict()
-        team_dict[num + '_id'] = team_json['id']
-        team_dict[num + '_name'] = team_json['team']['name']
-        team_dict[num + '_abbreviation'] = team_json['team']['abbreviation']
-        team_dict[num + '_home_away'] = team_json['homeAway']
-        team_dict[num + '_score'] = team_json['score']
-        team_dict[num + '_winner'] = team_json['winner']
+        team_dict[num + '_id'] = get_json_element(team_json, ['id'])
+        team_dict[num + '_name'] = get_json_element(
+            team_json, ['team', 'name']
+        )
+        team_dict[num + '_abbreviation'] = get_json_element(
+            team_json, ['team', 'abbreviation']
+        )
+        team_dict[num + '_home_away'] = get_json_element(
+            team_json, ['homeAway']
+        )
+        team_dict[num + '_score'] = get_json_element(team_json, ['score'])
+        team_dict[num + '_winner'] = get_json_element(team_json, ['winner'])
         if include_team_statistics:
-            team_dict[num + '_statistics'] = team_json['statistics']
+            team_dict[num + '_statistics'] = get_json_element(
+                team_json, ['statistics']
+            )
         return team_dict
 
     def match_data(self) -> dict:
@@ -120,7 +143,7 @@ class EspnDate:
         A JSON of the API response.
     """
 
-    def __init__(self, date: str) -> None:
+    def __init__(self, date: str, try_count: int = 3) -> None:
         self.date = date
         try:
             formatted_date = datetime.datetime.strptime(self.date, '%Y%m%d')
@@ -129,7 +152,19 @@ class EspnDate:
                 'Incorrect Date Format, date must be in "YYYYMMDD" format'
             )
         self.url = f'https://site.web.api.espn.com/apis/site/v2/sports/rugby/scorepanel?contentorigin=espn&dates={self.date}&lang=en&region=gb&tz=Europe/London'  # noqa
-        self.response = get_request_response(self.url, ESPN_HEADERS)
+        self.try_count = try_count
+        while try_count > 0:
+            try:
+                self.response = get_request_response(self.url, ESPN_HEADERS)
+                try_count = 0
+            except ConnectionError:
+                if try_count <= 0:
+                    raise ConnectionError(
+                        f'API connection for {self.date} aborted'
+                    )
+                else:
+                    try_count -= 1
+                time.sleep(0.5)
         self.json = json.loads(self.response.text)
         logger.info(f'Getting matches for: {formatted_date}')
 
@@ -147,14 +182,15 @@ class EspnDate:
         date_dataframe: pd.DataFrame
             The dataframe containing all matches on that date.
         """
-        competitions = self.json['scores']
-        competition_count = len(competitions)
+        competitions = get_json_element(self.json, ['scores'])
         match_count = 0
         match_data_dicts = []
-        for competition in competitions:
-            competition_name = competition['leagues'][0]['name']
-            competition_season = competition['season']['year']
-            matches = competition['events']
+        if competitions:
+            competition_count = len(competitions)
+            for competition in competitions:
+                competition_name = competition['leagues'][0]['name']
+                competition_season = competition['season']['year']
+                matches = competition['events']
             for match in matches:
                 match_count += 1
                 temp_match = EspnMatch(match)
@@ -162,7 +198,8 @@ class EspnDate:
                 temp_match_data['competition'] = competition_name
                 temp_match_data['season'] = competition_season
                 match_data_dicts.append(temp_match_data)
-
+        else:
+            competition_count = 0
         logger.info(
             f'{match_count} matches parsed from {competition_count} competitions'  # noqa
         )
