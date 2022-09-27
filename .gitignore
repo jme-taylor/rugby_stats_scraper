@@ -2,6 +2,11 @@
 .vscode/
 .todo
 
+# data, except the example file + testing files
+data/*
+!data/espn_date_test.csv
+!data/espn_match_test.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -113,6 +118,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+!example.env
 
 # Spyder project settings
 .spyderproject

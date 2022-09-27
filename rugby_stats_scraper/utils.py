@@ -1,22 +1,76 @@
+import os
+
 import requests
-from bs4 import BeautifulSoup
+from dotenv import load_dotenv
 
 
-def get_url_content(url):
-    """
-    Function to create a beautiful soup object from a URL.
+def get_request_response(url: str, headers: dict) -> requests.Response:
+    """Gets a response from an API, given a url and headers
 
     Parameters
     ----------
-    url: str
-        The url of the website, as a string
+    url : str
+        The URL to get the request response from.
+    headers : dict
+        The authentication headers for the response.
 
     Returns
     -------
-    soup: bs4.BeautifulSoup
-        A beautiful soup object with the parsed URL
+    requests.Response
+        The response from the request - in requests.Response format
     """
-    req = requests.get(url)
-    soup = BeautifulSoup(req.content, 'html.parser')
+    response = requests.get(url, headers)
+    return response
 
-    return soup
+
+def load_espn_headers() -> dict:
+    """Loads ESPN API headers from .env file
+
+    Returns
+    -------
+    espn_headers: dict
+        A dict containing the headers to access the ESPN API
+    """
+    load_dotenv()
+    espn_headers = {
+        'authority': os.getenv('AUTHORITY'),
+        'accept': os.getenv('ACCEPT'),
+        'accept-language': os.getenv('ACCEPT-LANGUAGE'),
+        'origin': os.getenv('ORIGIN'),
+        'referer': os.getenv('REFERER'),
+        'sec-ch-ua': os.getenv('SEC-CH-UA'),
+        'sec-ch-ua-mobile': os.getenv('SEC-CH-UA-MOBILE'),
+        'sec-ch-ua-platform': os.getenv('SEC-CH-UA-PLATFORM'),
+        'sec-fetch-dest': os.getenv('SEC-FETCH-DEST'),
+        'sec-fetch-mode': os.getenv('SEC-FETCH-MODE'),
+        'sec-fetch-site': os.getenv('SEC-FETCH-SITE'),
+        'user-agent': os.getenv('USER-AGENT'),
+    }
+    return espn_headers
+
+
+def get_json_element(json: dict, path: tuple) -> str:
+    """Function to safely get a value from a nested JSON. Returns a None value
+    if the path doesn't exist.
+
+    Parameters
+    ----------
+    json : dict
+        The json for which you want to extract the value from.
+    path : tuple
+         A tuple containing each element of the path, with the first element of
+        the tuple being the outermost, and the last value being the innermost.
+
+    Returns
+    -------
+    value : str
+        A string with the value from the nested path - None if this doesn't
+        exist.
+    """
+    value = json
+    for p in path:
+        try:
+            value = value[p]
+        except (KeyError, TypeError):
+            value = None
+    return value
