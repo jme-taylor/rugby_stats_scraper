@@ -1,7 +1,9 @@
 import os
 
+import pandas as pd
 import requests
 from dotenv import load_dotenv
+from pandas.errors import EmptyDataError
 
 
 def get_request_response(url: str, headers: dict) -> requests.Response:
@@ -74,3 +76,28 @@ def get_json_element(json: dict, path: tuple) -> str:
         except (KeyError, TypeError):
             value = None
     return value
+
+
+def check_file_has_data(filepath: str) -> bool:
+    """Checks that a CSV of existing data exists and is populated.
+
+    Paramaters
+    ----------
+    filepath: str
+        The filepath of the CSV file.
+
+    Returns
+    -------
+    bool
+        Boolean flag indicating if the file exists and has data.
+    """
+    file_exists = os.path.exists(filepath)
+    if file_exists:
+        try:
+            df = pd.read_csv(filepath)
+            file_empty = not df.empty
+        except EmptyDataError:
+            file_empty = False
+    else:
+        file_empty = False
+    return file_exists and file_empty

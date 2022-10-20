@@ -5,6 +5,7 @@ import pandas as pd
 
 from rugby_stats_scraper.constants import DATA_FOLDER, ESPN_EARLIEST_DATE
 from rugby_stats_scraper.espn import EspnDate
+from rugby_stats_scraper.utils import check_file_has_data
 
 # default file storage
 default_filename = 'match_data.csv'
@@ -49,16 +50,30 @@ def main(
         filename = default_filename
         filepath = default_filepath
 
+    if check_file_has_data(filepath):
+        date_range_data = pd.read_csv(filepath)
+        max_date = date_range_data['match_date'].max()
+        date_range_data = date_range_data.drop(
+            date_range_data[date_range_data['match_date'] == max_date].index
+        )
+    else:
+        date_range_data = pd.DataFrame()
+
     temp_filename = 'tmp_' + filename
     temp_filepath = DATA_FOLDER.joinpath(temp_filename)
 
     if not earliest_date:
-        earliest_date = ESPN_EARLIEST_DATE
+        if check_file_has_data(filepath):
+            earliest_date = datetime.strptime(
+                date_range_data['match_date'].max(), '%Y-%m-%dT%H:%MZ'
+            )
+
+        else:
+            earliest_date = ESPN_EARLIEST_DATE
 
     if not latest_date:
         latest_date = datetime.today() - timedelta(days=1)
 
-    date_range_data = pd.DataFrame()
     date = earliest_date
     while date <= latest_date:
         date_string = date.strftime('%Y%m%d')
