@@ -13,7 +13,6 @@ Dependency management in this project is done via [poetry](https://python-poetry
 Once poetry is installed, you can navigate to where the repo is stored, then run the following commands in order.
 
 ```bash
-poetry init
 poetry install
 poetry shell
 ```
