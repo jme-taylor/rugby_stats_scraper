@@ -4,21 +4,15 @@ import logging
 import time
 
 import pandas as pd
+import requests
 
-from rugby_stats_scraper.utils import (
-    get_json_element,
-    get_request_response,
-    load_espn_headers,
-)
+from rugby_stats_scraper.utils import get_json_element
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
     level=logging.INFO,
     format='[%(asctime)s] [%(name)s] [%(levelname)s] - %(message)s',
 )
-
-
-ESPN_HEADERS = load_espn_headers()
 
 
 class EspnMatch:
@@ -164,7 +158,7 @@ class EspnDate:
         self.try_count = try_count
         while self.try_count > 0:
             try:
-                self.response = get_request_response(self.url, ESPN_HEADERS)
+                self.response = requests.get(self.url)
                 self.try_count = 0
             except (ConnectionError, ConnectionResetError):
                 if self.try_count <= 0:

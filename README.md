@@ -18,8 +18,6 @@ poetry install
 poetry shell
 ```
 
-You'll also need some credentials for the ESPN scraper to use with the API. You can then store these in a `.env` file that will be read by the program. To get the headers, you can do this using your network tab in google chrome [(here](https://kiwidamien.github.io/using-api-calls-via-the-network-panel.html) are some more detailed instructions to a more generalised format). An example expected `.env` file can be seen in `example.env`.
-
 ## Running the scraper
 
 If these commands have worked, you should then be in the project's virual environment. You can then run the following command:
