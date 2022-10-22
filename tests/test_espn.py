@@ -28,6 +28,7 @@ class TestEspnDate(unittest.TestCase):
         expected_date_data = pd.read_csv(
             expected_data_path,
             dtype={
+                'match_id': str,
                 'year': str,
                 'team_1_id': str,
                 'team_2_id': str,
