@@ -1,4 +1,6 @@
 EXPECTED_MATCH = {
+    'match_id': '595491',
+    'unique_id': 's:300~l:8328~e:595491~c:595491',
     'match_date': '2022-09-17T19:10Z',
     'venue': 'Estadio Libertadores de America',
     'city': 'Buenos Aires',

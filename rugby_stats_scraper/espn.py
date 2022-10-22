@@ -48,6 +48,10 @@ class EspnMatch:
 
     def date_and_venue_information(self) -> None:
         """Method to get the date and venue information for the match."""
+        self.match_id = get_json_element(self.json, ('competitions', 0, 'id'))
+        self.unique_id = get_json_element(
+            self.json, ('competitions', 0, 'uid')
+        )
         self.venue = get_json_element(
             self.json, ('competitions', 0, 'venue', 'fullName')
         )
@@ -107,6 +111,8 @@ class EspnMatch:
         match_dict = dict()
         self.date_and_venue_information()
 
+        match_dict['match_id'] = self.match_id
+        match_dict['unique_id'] = self.unique_id
         match_dict['match_date'] = self.match_date
         match_dict['venue'] = self.venue
         match_dict['city'] = self.city
