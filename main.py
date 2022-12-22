@@ -81,7 +81,7 @@ def main(
         temp_date_dataframe = temp_date.date_data()
         date_range_data = pd.concat([date_range_data, temp_date_dataframe])
         date += timedelta(days=1)
-        date_range_data.to_csv((temp_filepath), index=False)
+        date_range_data.to_csv(temp_filepath, index=False)
 
     date_range_data.to_csv(filepath, index=False)
 
