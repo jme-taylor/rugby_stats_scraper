@@ -1,10 +1,11 @@
 import os
+from typing import Union
 
 import pandas as pd
 from pandas.errors import EmptyDataError
 
 
-def get_json_element(json: dict, path: tuple) -> str:
+def get_json_element(json: dict, path: tuple) -> Union[str, dict, None]:
     """Function to safely get a value from a nested JSON. Returns a None value
     if the path doesn't exist.
 
@@ -18,23 +19,25 @@ def get_json_element(json: dict, path: tuple) -> str:
 
     Returns
     -------
-    value : str
-        A string with the value from the nested path - None if this doesn't
-        exist.
+    value : Union[str, dict, None]
+        Depending on the path provided, one of three things will be returned;
+        if the path leads to a single value, the string of this value will be
+        returned; if the path leads to another dictionary, this dictionary
+        will be returned; if the path isn't valid, a nonetype will be returned.
     """
     value = json
     for p in path:
         try:
             value = value[p]
         except (KeyError, TypeError):
-            value = None
+            return None
     return value
 
 
 def check_file_has_data(filepath: str) -> bool:
     """Checks that a CSV of existing data exists and is populated.
 
-    Paramaters
+    Parameters
     ----------
     filepath: str
         The filepath of the CSV file.

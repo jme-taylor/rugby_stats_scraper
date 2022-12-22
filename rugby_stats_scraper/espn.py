@@ -45,30 +45,26 @@ class EspnMatch:
 
     def __init__(self, json: dict) -> None:
         self.json = json
-
-    def date_and_venue_information(self) -> None:
-        """Method to get the date and venue information for the match."""
-        self.match_id = get_json_element(self.json, ('competitions', 0, 'id'))
-        self.unique_id = get_json_element(
-            self.json, ('competitions', 0, 'uid')
-        )
-        self.venue = get_json_element(
-            self.json, ('competitions', 0, 'venue', 'fullName')
-        )
-        self.city = get_json_element(
-            self.json, ('competitions', 0, 'venue', 'address', 'city')
-        )
-        self.state = get_json_element(
-            self.json, ('competitions', 0, 'venue', 'address', 'state')
+        self.match_date = get_json_element(self.json, ('date',))
+        self.indoor = get_json_element(
+            self.json, ('competitions', 0, 'venue', 'indoor')
         )
         self.neutral_site = get_json_element(
             self.json, ('competitions', 0, 'neutralSite')
         )
-        self.indoor = get_json_element(
-            self.json, ('competitions', 0, 'venue', 'indoor')
+        self.state = get_json_element(
+            self.json, ('competitions', 0, 'venue', 'address', 'state')
         )
-
-        self.match_date = get_json_element(self.json, ('date',))
+        self.city = get_json_element(
+            self.json, ('competitions', 0, 'venue', 'address', 'city')
+        )
+        self.venue = get_json_element(
+            self.json, ('competitions', 0, 'venue', 'fullName')
+        )
+        self.unique_id = get_json_element(
+            self.json, ('competitions', 0, 'uid')
+        )
+        self.match_id = get_json_element(self.json, ('competitions', 0, 'id'))
 
     def team_information(self, team_json: dict, num: str) -> dict:
         """Method to get information at a team level.
@@ -109,7 +105,6 @@ class EspnMatch:
             A dictionary containing all the match information.
         """
         match_dict = dict()
-        self.date_and_venue_information()
 
         match_dict['match_id'] = self.match_id
         match_dict['unique_id'] = self.unique_id
