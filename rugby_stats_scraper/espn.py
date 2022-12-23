@@ -1,3 +1,4 @@
+from dataclasses import field, dataclass, InitVar, asdict
 import datetime
 import json
 import logging
@@ -7,133 +8,92 @@ import pandas as pd
 import requests
 
 from rugby_stats_scraper.utils import get_json_element
+from rugby_stats_scraper.constants import DATA_FOLDER
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
     level=logging.INFO,
-    format='[%(asctime)s] [%(name)s] [%(levelname)s] - %(message)s',
+    format="[%(asctime)s] [%(name)s] [%(levelname)s] - %(message)s",
 )
 
 
-class EspnMatch:
-    """
-    Class for a single match from ESPN data.
+@dataclass
+class TeamStats:
 
-    Parameters
-    ----------
-    json: dict
-        A JSON with the match data inside of it.
+    team_json: InitVar[dict]
 
-    Attributes
-    ----------
-    json: dict
-        A JSON of the match data
-    venue: str
-        The stadium that the match was played in.
-    city: str
-        The city that the match was played in.
-    state: str
-        The state that the match was played in.
-    neutral_site: bool
-        Whether the venue was neutral (i.e. neither of the two teams would
-        call it their home stadium).
-    indoor: bool
-        Whether the match was played indoors or not.
-    match_date: str
-        The date and time the match was played at.
-    """
+    id: str = field(init=False)
+    name: str = field(init=False)
+    abbreviation: str = field(init=False)
+    home_away: str = field(init=False)
+    score: str = field(init=False)
+    winner: str = field(init=False)
+    statistics: list = field(init=False)
 
-    def __init__(self, json: dict) -> None:
-        self.json = json
-        self.match_date = get_json_element(self.json, ('date',))
-        self.indoor = get_json_element(
-            self.json, ('competitions', 0, 'venue', 'indoor')
-        )
-        self.neutral_site = get_json_element(
-            self.json, ('competitions', 0, 'neutralSite')
-        )
-        self.state = get_json_element(
-            self.json, ('competitions', 0, 'venue', 'address', 'state')
-        )
-        self.city = get_json_element(
-            self.json, ('competitions', 0, 'venue', 'address', 'city')
-        )
-        self.venue = get_json_element(
-            self.json, ('competitions', 0, 'venue', 'fullName')
-        )
-        self.unique_id = get_json_element(
-            self.json, ('competitions', 0, 'uid')
-        )
-        self.match_id = get_json_element(self.json, ('competitions', 0, 'id'))
-
-    def team_information(self, team_json: dict, num: str) -> dict:
-        """Method to get information at a team level.
-
-        Parameters
-        ----------
-        team_json : dict
-            A JSON containing the team level information.
-        num : str
-            The number of the team - will be '1' or '2'
-
-        Returns
-        -------
-        team_dict: dict
-            A dictionary with team level information.
-        """
-        team_dict = dict()
-        team_dict[num + '_id'] = get_json_element(team_json, ('id',))
-        team_dict[num + '_name'] = get_json_element(
-            team_json, ('team', 'name')
-        )
-        team_dict[num + '_abbreviation'] = get_json_element(
-            team_json, ('team', 'abbreviation')
-        )
-        team_dict[num + '_home_away'] = get_json_element(
-            team_json, ('homeAway',)
-        )
-        team_dict[num + '_score'] = get_json_element(team_json, ('score',))
-        team_dict[num + '_winner'] = get_json_element(team_json, ('winner',))
-        return team_dict
-
-    def match_data(self) -> dict:
-        """Generates the full match dataset.
-
-        Returns
-        -------
-        match_dict: dict
-            A dictionary containing all the match information.
-        """
-        match_dict = dict()
-
-        match_dict['match_id'] = self.match_id
-        match_dict['unique_id'] = self.unique_id
-        match_dict['match_date'] = self.match_date
-        match_dict['venue'] = self.venue
-        match_dict['city'] = self.city
-        match_dict['state'] = self.state
-        match_dict['neutral_site'] = self.neutral_site
-        match_dict['indoor'] = self.indoor
-
-        teams = self.json['competitions'][0]['competitors']
-        for team, team_num in zip(teams, ['team_1', 'team_2']):
-            team_data = self.team_information(team, team_num)
-            match_dict.update(team_data)
-
-        return match_dict
+    def __post_init__(self, team_json: dict) -> None:
+        self.id = get_json_element(team_json, ("id",))
+        self.name = get_json_element(team_json, ("team", "name"))
+        self.abbreviation = get_json_element(team_json, ("team", "abbreviation"))
+        self.home_away = get_json_element(team_json, ("homeAway",))
+        self.score = get_json_element(team_json, ("score",))
+        self.winner = get_json_element(team_json, ("winner",))
+        self.statistics = get_json_element(team_json, ("statistics",))
 
 
-class EspnDate:
+@dataclass
+class MatchStats:
+
+    match_json: InitVar[dict]
+
+    match_id: str = field(init=False)
+    unique_id: str = field(init=False)
+    venue: str = field(init=False)
+    city: str = field(init=False)
+    state: str = field(init=False)
+    neutral_site: str = field(init=False)
+    indoor: str = field(init=False)
+    match_date: str = field(init=False)
+
+    def __post_init__(self, match_json: dict) -> None:
+        self.match_id = get_json_element(match_json, ('competitions', 0, 'id'))
+        self.unique_id = get_json_element(match_json, ('competitions', 0, 'uid'))
+        self.venue = get_json_element(match_json, ('competitions', 0, 'venue', 'fullName'))
+        self.city = get_json_element(match_json, ('competitions', 0, 'venue', 'address', 'city'))
+        self.state = get_json_element(match_json, ('competitions', 0, 'venue', 'address', 'state'))
+        self.neutral_site = get_json_element(match_json, ('competitions', 0, 'neutralSite'))
+        self.indoor = get_json_element(match_json, ('competitions', 0, 'venue', 'indoor'))
+        self.match_date = get_json_element(match_json, ('date',))
+
+
+class Match:
+    def __init__(self, match_json: dict) -> None:
+        self.match_json = match_json
+
+    def create_match_data_dict(self) -> dict:
+        match_data_dict = dict()
+
+        match_data = MatchStats(self.match_json)
+        match_data_dict.update(asdict(match_data))
+
+        teams = get_json_element(self.match_json, ('competitions', 0, 'competitors'))
+
+        for team, team_name in zip(teams, ['team_1', 'team_2']):
+            team_data = TeamStats(team)
+            team_data_dict = {f"{team_name}_{k}": v for k, v in asdict(team_data).items()}
+            match_data_dict.update(team_data_dict)
+
+        return match_data_dict
+
+
+class Date:
     """
     Class for a single date from ESPN data.
-
     Parameters
     ----------
     try_count: int, optional
         An integer to determine how many retries will be made in the event of
         a connection or connection reset error to the API. By default, this is
         set at 3.
-
     Attributes
     ----------
     date: str
@@ -172,10 +132,8 @@ class EspnDate:
         self.json = json.loads(self.response.text)
         logger.info(f'Getting matches for: {formatted_date}')
 
-    def date_data(self):
+    def create_date_dataframe(self):
         """Method to create a date dataframe.
-
-
         Returns
         -------
         date_dataframe: pd.DataFrame
@@ -197,8 +155,8 @@ class EspnDate:
                 matches = get_json_element(competition, ('events',))
                 for match in matches:
                     match_count += 1
-                    temp_match = EspnMatch(match)
-                    temp_match_data = temp_match.match_data()
+                    temp_match = Match(match)
+                    temp_match_data = temp_match.create_match_data_dict()
                     temp_match_data['competition'] = competition_name
                     temp_match_data['season'] = competition_season
 
@@ -210,3 +168,9 @@ class EspnDate:
         )
         date_dataframe = pd.DataFrame(match_data_dicts)
         return date_dataframe
+
+
+date = Date('20220917')
+date_df = date.create_date_dataframe()
+filepath = DATA_FOLDER.joinpath('espn_date_test.csv')
+date_df.to_csv(filepath, index=False)

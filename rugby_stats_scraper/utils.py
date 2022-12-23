@@ -23,7 +23,8 @@ def get_json_element(json: dict, path: tuple) -> Union[str, dict, None]:
         Depending on the path provided, one of three things will be returned;
         if the path leads to a single value, the string of this value will be
         returned; if the path leads to another dictionary, this dictionary
-        will be returned; if the path isn't valid, a nonetype will be returned.
+        will be returned; if the path isn't valid, a none type will be
+        returned.
     """
     value = json
     for p in path:
