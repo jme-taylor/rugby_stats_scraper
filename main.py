@@ -4,7 +4,7 @@ import click
 import pandas as pd
 
 from rugby_stats_scraper.constants import DATA_FOLDER, ESPN_EARLIEST_DATE
-from rugby_stats_scraper.espn import EspnDate
+from rugby_stats_scraper.espn import Date
 from rugby_stats_scraper.utils import check_file_has_data
 
 # default file storage
@@ -77,8 +77,8 @@ def main(
     date = earliest_date
     while date <= latest_date:
         date_string = date.strftime('%Y%m%d')
-        temp_date = EspnDate(date_string)
-        temp_date_dataframe = temp_date.date_data()
+        temp_date = Date(date_string)
+        temp_date_dataframe = temp_date.create_date_dataframe()
         date_range_data = pd.concat([date_range_data, temp_date_dataframe])
         date += timedelta(days=1)
         date_range_data.to_csv(temp_filepath, index=False)
