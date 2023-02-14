@@ -1,7 +1,11 @@
 # personal stuff
 .vscode/
 .todo
-.idea/
+
+# idea stuff
+
+.xml
+.iml
 
 # data, except the example file + testing files
 data/*
