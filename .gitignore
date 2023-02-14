@@ -2,6 +2,11 @@
 .vscode/
 .todo
 
+# idea stuff
+
+.xml
+.iml
+
 # data, except the example file + testing files
 data/*
 !data/espn_date_test.csv
