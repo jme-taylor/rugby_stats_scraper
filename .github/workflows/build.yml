@@ -1,0 +1,49 @@
+name: CI
+
+on: [push]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+
+      - name: Set up python 3.9
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+
+      - name: Install pioetry
+        uses: snok/install-poetry@v1
+
+      - name: Cache poetry virtualenv
+        uses: actions/cache@v1
+        id: cache
+        with:
+          path: ~/.virtualenvs
+          key: poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            poetry-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        run: poetry install
+        if: steps.cache.outputs.cache-hit != 'true'
+
+      - name: Run linter
+        run: poetry run flake8 .
+
+      - name: Run formatter
+        run: poetry run black . --check --line-length 79
+
+      - name: Run tests
+        run: poetry run pytest 
+
+      - name: Run isort
+        run: poetry run isort . --check
+
+      - name: Run mypy
+        run: poetry run mypy . --ignore-missing-imports --explicit-package-bases

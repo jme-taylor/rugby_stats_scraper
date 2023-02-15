@@ -32,7 +32,7 @@ def get_json_element(json: dict, path: tuple) -> Union[str, dict, None]:
     return value
 
 
-def check_file_has_data(filepath: str) -> bool:
+def check_file_has_data(filepath: Union[str, Path]) -> bool:
     """Checks that a CSV of existing data exists and is populated.
 
     Paramaters
