@@ -46,4 +46,4 @@ jobs:
         run: poetry run isort . --check
 
       - name: Run mypy
-        run: poetry run mypy . --ignore-missing-imports
+        run: poetry run mypy . --ignore-missing-imports --explicit-package-bases
