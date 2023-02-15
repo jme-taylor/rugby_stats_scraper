@@ -33,6 +33,9 @@ jobs:
         run: poetry install
         if: steps.cache.outputs.cache-hit != 'true'
 
+      - name: Run linter
+        run: poetry run flake8 .
+
       - name: Run formatter
         run: poetry run black . --check --line-length 79
 
@@ -41,3 +44,6 @@ jobs:
 
       - name: Run isort
         run: poetry run isort . --check
+
+      - name: Run mypy
+        run: poetry run mypy . --ignore-missing-imports
