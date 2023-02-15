@@ -15,21 +15,21 @@ def main() -> None:
     there and use that date as the date to start appending from, so it's not
     rewriting the whole dataset each time (this can take a while)."""
 
-    filename = 'match_data.csv'
+    filename = "match_data.csv"
     filepath = DATA_FOLDER.joinpath(filename)
 
-    temp_filename = 'tmp_' + filename
+    temp_filename = "tmp_" + filename
     temp_filepath = DATA_FOLDER.joinpath(temp_filename)
 
     # if the file given has data - use that and drop the last day from it
     if check_file_has_data(filepath):
         date_range_data = pd.read_csv(filepath)
-        max_date = date_range_data['match_date'].max()
+        max_date = date_range_data["match_date"].max()
         date_range_data = date_range_data.drop(
-            date_range_data[date_range_data['match_date'] == max_date].index
+            date_range_data[date_range_data["match_date"] == max_date].index
         )
         date = datetime.strptime(
-            date_range_data['match_date'].max(), '%Y-%m-%dT%H:%MZ'
+            date_range_data["match_date"].max(), "%Y-%m-%dT%H:%MZ"
         )
     else:
         date_range_data = pd.DataFrame()
@@ -37,7 +37,7 @@ def main() -> None:
     latest_date = datetime.today() - timedelta(days=1)
 
     while date <= latest_date:
-        date_string = date.strftime('%Y%m%d')
+        date_string = date.strftime("%Y%m%d")
         temp_date = EspnDate(date_string)
         temp_date_dataframe = temp_date.date_data()
         date_range_data = pd.concat([date_range_data, temp_date_dataframe])
@@ -47,5 +47,5 @@ def main() -> None:
     date_range_data.to_csv(filepath, index=False)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

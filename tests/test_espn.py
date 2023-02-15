@@ -9,7 +9,7 @@ from tests.data import EXPECTED_MATCH
 
 
 def test_match_data():
-    test_match_json_filepath = DATA_FOLDER.joinpath('espn_match_test.json')
+    test_match_json_filepath = DATA_FOLDER.joinpath("espn_match_test.json")
     with open(test_match_json_filepath) as f:
         test_match_json = json.load(f)
 
@@ -18,18 +18,18 @@ def test_match_data():
 
 
 def test_date_data():
-    test_date = EspnDate('20220917')
+    test_date = EspnDate("20220917")
 
-    expected_data_path = DATA_FOLDER.joinpath('espn_date_test.csv')
+    expected_data_path = DATA_FOLDER.joinpath("espn_date_test.csv")
     expected_date_data = pd.read_csv(
         expected_data_path,
         dtype={
-            'match_id': str,
-            'year': str,
-            'team_1_id': str,
-            'team_2_id': str,
-            'team_1_score': str,
-            'team_2_score': str,
+            "match_id": str,
+            "year": str,
+            "team_1_id": str,
+            "team_2_id": str,
+            "team_1_score": str,
+            "team_2_score": str,
         },
     )
 
