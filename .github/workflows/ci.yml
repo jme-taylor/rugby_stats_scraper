@@ -17,7 +17,7 @@ jobs:
         with:
           python-version: 3.9
 
-      - name: Install poetry
+      - name: Install pioetry
         uses: snok/install-poetry@v1
 
       - name: Cache poetry virtualenv
@@ -38,3 +38,6 @@ jobs:
 
       - name: Run tests
         run: poetry run pytest 
+
+      - name: Run isort
+        run: isort . --check
