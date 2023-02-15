@@ -1,4 +1,4 @@
-name: CI
+ame: CI
 
 on: [push]
 
@@ -12,10 +12,10 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Set up Python 3.9
+      - name: Set up Python 3.7
         uses: actions/setup-python@v1
         with:
-          python-version: 3.9
+          python-version: 3.7
 
       - name: Install Poetry
         uses: dschep/install-poetry-action@v1.2
