@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
 
-  test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -12,12 +12,12 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Set up Python 3.9
+      - name: Set up python 3.9
         uses: actions/setup-python@v1
         with:
           python-version: 3.9
 
-      - name: Install Poetry
+      - name: Install poetry
         uses: snok/install-poetry@v1
 
       - name: Cache poetry virtualenv
