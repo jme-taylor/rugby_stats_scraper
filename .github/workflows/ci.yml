@@ -34,7 +34,7 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Code Quality
-        run: poetry run black . --check
+        run: poetry run black . --check --line-length 79
 
       - name: Test with pytest
         env:
