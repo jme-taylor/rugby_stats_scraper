@@ -36,5 +36,5 @@ jobs:
       - name: Run formatter
         run: poetry run black . --check --line-length 79
 
-      - name: Test with pytest
+      - name: Run tests
         run: poetry run pytest 
