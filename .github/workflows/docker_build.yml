@@ -20,4 +20,4 @@ jobs:
       with:
         context: .
         push: true
-        tags: rugby-stats-scraper:latest
+        tags: rugby-stats-scraper
