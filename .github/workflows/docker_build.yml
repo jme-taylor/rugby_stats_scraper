@@ -23,4 +23,4 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ secrets.DOCKER_USER_NAME}}/rugby-stats-scraper:latest
+        tags: user/rugby-stats-scraper:latest
