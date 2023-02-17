@@ -21,4 +21,4 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: user/rugby-stats-scraper:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/rugby-stats-scraper:latest
