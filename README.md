@@ -1,6 +1,6 @@
 # Rugby Stats Scraper
 
-I found it hard to find my own source of rugby match results. So I decided to make my own scraper to solve that issue and practice a few python/data engineering-y skills at the same time.
+I found it hard to find my own source of rugby match results. So I decided to make my own scraper to solve that issue and practice a few python/data engineering-y skills at the same time. This is no means what I deem a 'finished product' and there's a lot of scope for improvements in at [scoped improvements](#scoped-improvements)
 
 The main code is python script that can access rugby match data from the web and store it as a CSV on your local machine. Currently this only uses ESPN data ([here's](https://www.espn.co.uk/rugby/scoreboard?date=20220917) an example), but I may add more sources as I go on.
 
@@ -47,3 +47,10 @@ python main.py
 ### Data
 
 Data will populate in a `match_data.csv` in the `data` folder with all the matches that the scraper can find. If it's your first time runnning the data, it will take quite a while to entirely populate this file (scope for improvements here). But, on every subsequent run, the scraper will run from the last populated date in the `match_data.csv`.
+
+### Scoped Improvements
+
+- Use a database rather than `.csv` files. Currently I'm using a `.csv` output. This will, and already hits performance + scalability issues. Something like `postgresql` or even using a storage bucket like `S3` could work.
+- Change the classes within `espn.py` could be better implemented as `dataclasses` as there isn't much method logic here, just using them to store data.
+- Pulling team level stats like posession could be useful too
+- Champions cup data is spotty, might need a different source for this.
