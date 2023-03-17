@@ -2,8 +2,11 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 
-from rugby_stats_scraper.constants import (DATA_FOLDER, ESPN_EARLIEST_DATE,
-                                           S3_BUCKET_NAME)
+from rugby_stats_scraper.constants import (
+    DATA_FOLDER,
+    ESPN_EARLIEST_DATE,
+    S3_BUCKET_NAME,
+)
 from rugby_stats_scraper.espn import EspnDate
 from rugby_stats_scraper.s3 import StorageBucket
 from rugby_stats_scraper.utils import check_file_has_data
@@ -57,6 +60,9 @@ def main() -> None:
 
     storage_bucket.upload_file(filepath, upload_filename)
 
+
+if __name__ == "__main__":
+    main()
 
 if __name__ == "__main__":
     main()
