@@ -3,7 +3,6 @@ name: linting_formatting_testing
 on: [push]
 
 jobs:
-
   run_:
     runs-on: ubuntu-latest
 
@@ -33,6 +32,14 @@ jobs:
         run: poetry install
         if: steps.cache.outputs.cache-hit != 'true'
 
+      - name: Create env file
+        run: |
+          touch .env
+          echo AWS_ACCESS_ID=${{ secrets.AWS_ACCESS_ID }} >> .env
+          echo AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} >> .env
+          echo AWS_DEFAULT_REGION=${{ secrets.AWS_DEFAULT_REGION }} >> .env
+          cat .env
+
       - name: Run linter
         run: poetry run flake8 .
 
@@ -40,7 +47,7 @@ jobs:
         run: poetry run black . --check --line-length 79
 
       - name: Run tests
-        run: poetry run pytest 
+        run: poetry run pytest
 
       - name: Run isort
         run: poetry run isort . --check
