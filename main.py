@@ -2,8 +2,13 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 
-from rugby_stats_scraper.constants import DATA_FOLDER, ESPN_EARLIEST_DATE
+from rugby_stats_scraper.constants import (
+    DATA_FOLDER,
+    ESPN_EARLIEST_DATE,
+    S3_BUCKET_NAME,
+)
 from rugby_stats_scraper.espn import EspnDate
+from rugby_stats_scraper.s3 import StorageBucket
 from rugby_stats_scraper.utils import check_file_has_data
 
 current_date = datetime.today()
@@ -17,6 +22,9 @@ def main() -> None:
 
     filename = "match_data.csv"
     filepath = DATA_FOLDER.joinpath(filename)
+
+    storage_bucket = StorageBucket(S3_BUCKET_NAME)
+    storage_bucket.download_latest_data(filepath)
 
     temp_filename = "tmp_" + filename
     temp_filepath = DATA_FOLDER.joinpath(temp_filename)
@@ -45,6 +53,12 @@ def main() -> None:
         date_range_data.to_csv((temp_filepath), index=False)
 
     date_range_data.to_csv(filepath, index=False)
+
+    today_string = datetime.today().strftime("%y%m%d")
+
+    upload_filename = f"{today_string}_{filename}"
+
+    storage_bucket.upload_file(filepath, upload_filename)
 
 
 if __name__ == "__main__":
