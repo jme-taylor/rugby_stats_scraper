@@ -2,6 +2,7 @@
 .vscode/
 .todo
 test_data_creation.py
+aws_test.py
 
 # idea stuff
 

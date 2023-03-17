@@ -6,6 +6,8 @@ The main code is python script that can access rugby match data from the web and
 
 ## Installation instructions
 
+If you intend to run this with an S3 bucket, you'll need to use your AWS credentials in a `.env` file or the [configured AWS command line interface](https://aws.amazon.com/cli/). An example of the `.env` file can be seen in `env.example`
+
 Firstly clone the repo, then navigate to the folder on your machine where the repository is stored. You then have two options for running this project:
 
 1. Docker (preferred)
@@ -46,11 +48,11 @@ python main.py
 
 ### Data
 
-Data will populate in a `match_data.csv` in the `data` folder with all the matches that the scraper can find. If it's your first time runnning the data, it will take quite a while to entirely populate this file (scope for improvements here). But, on every subsequent run, the scraper will run from the last populated date in the `match_data.csv`.
+The data is uploaded to an S3 bucket. If you don't want this, it should be fairly easy for you to adjust the code to get rid of this, but I wanted to add this to practice my AWS skills. It uploads a file called `YYMMDD_match_data.csv` to your chosen storage bucket where `YYMMDD` is today's date. If it's your first time runnning the data, it will take quite a while to entirely populate this file (scope for improvements here). But, on every subsequent run, the scraper will grab the latest csv file from S3 and append any new data to this, and then upload it.
 
 ### Scoped Improvements
 
-- Use a database rather than `.csv` files. Currently I'm using a `.csv` output. This will, and already hits performance + scalability issues. Something like `postgresql` or even using a storage bucket like `S3` could work.
+- Use a database rather than `.csv` files. Currently I'm using a `.csv` output. This will, and already hits performance + scalability issues.
 - Change the classes within `espn.py` could be better implemented as `dataclasses` as there isn't much method logic here, just using them to store data.
 - Pulling team level stats like posession could be useful too
 - Champions cup data is spotty, might need a different source for this.

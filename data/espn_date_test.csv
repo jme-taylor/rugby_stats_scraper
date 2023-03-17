@@ -5,6 +5,6 @@ match_id,unique_id,match_date,venue,city,state,neutral_site,indoor,team_1_id,tea
 595663,s:300~l:8007~e:595663~c:595663,2022-09-17T14:00Z,Twickenham Stoop,London,England,False,False,25901,Harlequins,HQUIN,home,27,False,25909,Saracens,SARAC,away,30,True,Premiership Rugby,2023
 595664,s:300~l:8007~e:595664~c:595664,2022-09-17T14:00Z,Mattioli Woods Welford Road Stadium,Leicester,England,False,False,25903,Leicester Tigers,LEICS,home,36,True,25906,Newcastle Falcons,NEWC,away,21,False,Premiership Rugby,2023
 595665,s:300~l:8007~e:595665~c:595665,2022-09-17T14:00Z,Coventry Building Society Arena,Coventry,England,False,False,25905,Wasps,WASPS,home,8,False,25899,Bristol Rugby,BTL,away,23,True,Premiership Rugby,2023
-595587,s:300~l:8004~e:595587~c:595587,2022-09-17T02:05Z,Navigation Homes Stadium,Pukekohe,New Zealand,False,False,25935,Counties Manukau,MANK,home,39,False,25933,Canterbury,CANT,away,44,True,Bunnings Warehouse NPC,2023
-595588,s:300~l:8004~e:595588~c:595588,2022-09-17T04:35Z,Eden Park,Auckland,New Zealand,False,False,25930,Auckland,AUK,home,30,True,25946,Tasman,TASM,away,27,False,Bunnings Warehouse NPC,2023
-595589,s:300~l:8004~e:595589~c:595589,2022-09-17T07:05Z,McLean Park,Napier,New Zealand,False,False,25937,Hawke's Bay,HBAY,home,12,False,25948,Wellington,WELL,away,19,True,Bunnings Warehouse NPC,2023
+595587,s:300~l:8004~e:595587~c:595587,2022-09-17T02:05Z,Navigation Homes Stadium,Pukekohe,New Zealand,False,False,25935,Counties Manukau,MANK,home,39,False,25933,Canterbury,CANT,away,44,True,Mitre 10 Cup,2023
+595588,s:300~l:8004~e:595588~c:595588,2022-09-17T04:35Z,Eden Park,Auckland,New Zealand,False,False,25930,Auckland,AUK,home,30,True,25946,Tasman,TASM,away,27,False,Mitre 10 Cup,2023
+595589,s:300~l:8004~e:595589~c:595589,2022-09-17T07:05Z,McLean Park,Napier,New Zealand,False,False,25937,Hawke's Bay,HBAY,home,12,False,25948,Wellington,WELL,away,19,True,Mitre 10 Cup,2023
